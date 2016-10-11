@@ -1,0 +1,258 @@
+<!doctype html>
+<html>
+<head>
+    <title>Analog Clock using Canvas</title>
+</head>
+<body>
+    <canvas id="canvas" width="400" height="400"></canvas>
+</body>
+
+
+
+
+<script>
+
+
+window.onload = function () {
+    
+    // parameters
+    var numbHoursPerDay = 24;
+    var numbMinutesPerHour = 24;
+    var numbSecondsPerMinute = 24;
+    var numbArcMinutesPerSecond = 24;
+    
+    var secHandLength = 120;  // make clock bigger or smaller by twiddling this
+
+    // constants
+    var numbMillisecondsPerDay = 24 * 60 * 60 * 1000;
+    
+    // computed values
+    var numbMillisecondsPerHour = (numbMillisecondsPerDay / numbHoursPerDay) >> 0
+    var numbMillisecondsPerMinute = (numbMillisecondsPerHour / numbMinutesPerHour) >> 0
+    var numbMillisecondsPerSecond = (numbMillisecondsPerMinute / numbSecondsPerMinute) >> 0
+    var numbMillisecondsPerArcMinute = (numbMillisecondsPerSecond / numbArcMinutesPerSecond) >> 0
+    
+    
+    setInterval(showClock, 10);
+    
+    function showClock() {
+        // DEFINE CANVAS AND ITS CONTEXT.
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+	
+        var date = new Date;
+	// calculated values
+	var currNumbMilliseconds = (((date.getHours() * 60  +
+				      date.getMinutes()) * 60  +
+				     date.getSeconds()) * 1000 +
+				    date.getMilliseconds());
+	
+	// compute current time
+	residualMilliseconds = currNumbMilliseconds;
+
+	var currHours = residualMilliseconds / numbMillisecondsPerHour;
+	residualMilliseconds -= ((residualMilliseconds / numbMillisecondsPerHour) >> 0) * numbMillisecondsPerHour
+	
+	var currMinutes = residualMilliseconds / numbMillisecondsPerMinute;
+	residualMilliseconds -= ((residualMilliseconds / numbMillisecondsPerMinute) >> 0) * numbMillisecondsPerMinute
+	
+	var currSeconds = residualMilliseconds / numbMillisecondsPerSecond;
+	residualMilliseconds -= ((residualMilliseconds / numbMillisecondsPerSecond) >> 0) * numbMillisecondsPerSecond
+	
+	var currArcMinutes = residualMilliseconds / numbMillisecondsPerSecond;
+	residualMilliseconds -= ((residualMilliseconds / numbMillisecondsPerArcMinute) >> 0) * numbMillisecondsPerArcMinute
+
+
+        // CLEAR EVERYTHING ON THE CANVAS. \
+        ctx.clearRect(0, 0, canvas.width, canvas.height);        
+	
+        OUTER_DIAL1();
+        OUTER_DIAL2();
+        CENTER_DIAL();
+        MARK_THE_HOURS();
+        MARK_THE_SECONDS();
+
+	SHOW_REAL_SECONDS();
+        SHOW_ARCMINUTES();
+        SHOW_SECONDS();
+        SHOW_MINUTES();
+        SHOW_HOURS();
+
+	
+        function OUTER_DIAL1() {
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, secHandLength + 10, 0, Math.PI * 2);
+            ctx.strokeStyle = '#92949C';
+            ctx.stroke();
+        }
+
+
+	function OUTER_DIAL2() {
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, secHandLength + 7, 0, Math.PI * 2);
+            ctx.strokeStyle = '#929BAC';
+            ctx.stroke();
+        }
+
+	    
+        function CENTER_DIAL() {
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, 2, 0, Math.PI * 2);
+            ctx.lineWidth = 3;
+            ctx.fillStyle = '#353535';
+            ctx.strokeStyle = '#0C3D4A';
+            ctx.stroke();
+        }
+
+	    
+        function MARK_THE_HOURS() {
+            for (var i = 0; i < numbHoursPerDay; i++) {
+                angle = (i - 3) * (Math.PI * 2) / numbHoursPerDay;       // THE ANGLE TO MARK.
+                ctx.lineWidth = 1;            // HAND WIDTH.
+                ctx.beginPath();
+		
+                var x1 = (canvas.width / 2) + Math.cos(angle) * (secHandLength);
+                var y1 = (canvas.height / 2) + Math.sin(angle) * (secHandLength);
+                var x2 = (canvas.width / 2) + Math.cos(angle) * (secHandLength - (secHandLength / 7));
+                var y2 = (canvas.height / 2) + Math.sin(angle) * (secHandLength - (secHandLength / 7));
+		
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+		
+                ctx.strokeStyle = '#466B76';
+                ctx.stroke();
+            }
+        }
+	
+	    
+        function MARK_THE_SECONDS() {
+	    var numbTicMarksPerHour = 6;
+	    var numbTicMarks = numbHoursPerDay * numbTicMarksPerHour;
+    
+            for (var i = 0; i < numbTicMarks; i++) {
+                angle = (i - 3) * (Math.PI * 2) / numbTicMarks;       // THE ANGLE TO MARK.
+                ctx.lineWidth = 1;            // HAND WIDTH.
+                ctx.beginPath();
+		
+                var x1 = (canvas.width / 2) + Math.cos(angle) * (secHandLength);
+                var y1 = (canvas.height / 2) + Math.sin(angle) * (secHandLength);
+                var x2 = (canvas.width / 2) + Math.cos(angle) * (secHandLength - (secHandLength / 30));
+                var y2 = (canvas.height / 2) + Math.sin(angle) * (secHandLength - (secHandLength / 30));
+		
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+
+                ctx.strokeStyle = '#C4D1D5';
+                ctx.stroke();
+            }
+        }
+
+	
+	function SHOW_REAL_SECONDS() {
+	    return
+            angle =
+		((Math.PI * 2) * (date.getSeconds() /  60)) -
+		((Math.PI * 2) / 4);  // this adjusts the 0 angle to the top of the clock
+                ctx.lineWidth = 0.5;              // HAND WIDTH.
+		
+                ctx.beginPath();
+                // START FROM CENTER OF THE CLOCK.
+                ctx.moveTo(canvas.width / 2, canvas.height / 2);   
+                // DRAW THE LENGTH.
+                ctx.lineTo((canvas.width / 2 + Math.cos(angle) * secHandLength),
+                    canvas.height / 2 + Math.sin(angle) * secHandLength);
+
+                // DRAW THE TAIL OF THE SECONDS HAND.
+                ctx.moveTo(canvas.width / 2, canvas.height / 2);    // START FROM CENTER.
+                // DRAW THE LENGTH.
+                ctx.lineTo((canvas.width / 2 - Math.cos(angle) * 20),
+                    canvas.height / 2 - Math.sin(angle) * 20);
+
+                ctx.strokeStyle = '#586A73';        // COLOR OF THE HAND.
+                ctx.stroke();
+            }
+	    
+	    
+	    
+        function SHOW_ARCMINUTES() {
+	    
+            angle =
+		((Math.PI * 2) * (currArcMinutes / numbArcMinutesPerSecond)) -
+		((Math.PI * 2) / 4);  // this adjusts the 0 angle to the top of the clock
+                ctx.lineWidth = 0.5;              // HAND WIDTH.
+		
+                ctx.beginPath();
+                // START FROM CENTER OF THE CLOCK.
+                ctx.moveTo(canvas.width / 2, canvas.height / 2);   
+                // DRAW THE LENGTH.
+                ctx.lineTo((canvas.width / 2 + Math.cos(angle) * secHandLength),
+                    canvas.height / 2 + Math.sin(angle) * secHandLength);
+
+                // DRAW THE TAIL OF THE SECONDS HAND.
+                ctx.moveTo(canvas.width / 2, canvas.height / 2);    // START FROM CENTER.
+                // DRAW THE LENGTH.
+                ctx.lineTo((canvas.width / 2 - Math.cos(angle) * 20),
+                    canvas.height / 2 - Math.sin(angle) * 20);
+
+                ctx.strokeStyle = '#586A73';        // COLOR OF THE HAND.
+                ctx.stroke();
+            }
+	    
+	    
+        function SHOW_SECONDS() {
+            angle =
+		((Math.PI * 2) * (currSeconds / numbSecondsPerMinute)) -
+		((Math.PI * 2) / 4);  // this adjusts the 0 angle to the top of the clock
+                ctx.lineWidth = 0.5;              // HAND WIDTH.
+		
+                ctx.beginPath();
+                // START FROM CENTER OF THE CLOCK.
+                ctx.moveTo(canvas.width / 2, canvas.height / 2);   
+                // DRAW THE LENGTH.
+                ctx.lineTo((canvas.width / 2 + Math.cos(angle) * secHandLength),
+                    canvas.height / 2 + Math.sin(angle) * secHandLength);
+
+                // DRAW THE TAIL OF THE SECONDS HAND.
+                ctx.moveTo(canvas.width / 2, canvas.height / 2);    // START FROM CENTER.
+                // DRAW THE LENGTH.
+                ctx.lineTo((canvas.width / 2 - Math.cos(angle) * 20),
+                    canvas.height / 2 - Math.sin(angle) * 20);
+
+                ctx.strokeStyle = '#586A73';        // COLOR OF THE HAND.
+                ctx.stroke();
+            }
+	    
+	    
+        function SHOW_MINUTES() {
+            angle = ((Math.PI * 2) * (currMinutes / numbMinutesPerHour)) - ((Math.PI * 2) / 4);
+            ctx.lineWidth = 1.5;              // HAND WIDTH.
+	    
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, canvas.height / 2);  // START FROM CENTER.
+            // DRAW THE LENGTH.
+            ctx.lineTo((canvas.width / 2 + Math.cos(angle) * secHandLength / 1.1),      
+                       canvas.height / 2 + Math.sin(angle) * secHandLength / 1.1);
+	    
+            ctx.strokeStyle = '#999';  // COLOR OF THE HAND.
+            ctx.stroke();
+        }
+	    
+	    
+        function SHOW_HOURS() {
+            angle = ((Math.PI * 2) *
+		     (currHours / numbHoursPerDay)) - ((Math.PI * 2) / 4);
+	    ctx.lineWidth = 1.5;              // HAND WIDTH.
+	    
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, canvas.height / 2);     // START FROM CENTER.
+            // DRAW THE LENGTH.
+            ctx.lineTo((canvas.width / 2 + Math.cos(angle) * secHandLength / 1.5),      
+		       canvas.height / 2 + Math.sin(angle) * secHandLength / 1.5);
+	    
+            ctx.strokeStyle = '#000';   // COLOR OF THE HAND.
+            ctx.stroke();
+        }
+    }
+}
+</script>
+</html>
