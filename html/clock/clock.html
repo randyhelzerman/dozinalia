@@ -51,16 +51,16 @@ window.onload = function () {
 	residualMilliseconds = currNumbMilliseconds;
 
 	var currHours = residualMilliseconds / numbMillisecondsPerHour;
-	residualMilliseconds -= ((residualMilliseconds / numbMillisecondsPerHour) >> 0) * numbMillisecondsPerHour
+	residualMilliseconds -= ((residualMilliseconds / numbMillisecondsPerHour) >> 0) * numbMillisecondsPerHour;
 	
 	var currMinutes = residualMilliseconds / numbMillisecondsPerMinute;
-	residualMilliseconds -= ((residualMilliseconds / numbMillisecondsPerMinute) >> 0) * numbMillisecondsPerMinute
+	residualMilliseconds -= ((residualMilliseconds / numbMillisecondsPerMinute) >> 0) * numbMillisecondsPerMinute;
 	
 	var currSeconds = residualMilliseconds / numbMillisecondsPerSecond;
-	residualMilliseconds -= ((residualMilliseconds / numbMillisecondsPerSecond) >> 0) * numbMillisecondsPerSecond
+	residualMilliseconds -= ((residualMilliseconds / numbMillisecondsPerSecond) >> 0) * numbMillisecondsPerSecond;
 	
-	var currArcMinutes = residualMilliseconds / numbMillisecondsPerSecond;
-	residualMilliseconds -= ((residualMilliseconds / numbMillisecondsPerArcMinute) >> 0) * numbMillisecondsPerArcMinute
+	var currArcMinutes = residualMilliseconds / numbMillisecondsPerArcMinute;
+	residualMilliseconds -= ((residualMilliseconds / numbMillisecondsPerArcMinute) >> 0) * numbMillisecondsPerArcMinute;
 
 
         // CLEAR EVERYTHING ON THE CANVAS. \
