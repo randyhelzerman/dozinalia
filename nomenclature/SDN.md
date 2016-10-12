@@ -1,8 +1,8 @@
-* Systematic Dozenal Nomenclature
+# Systematic Dozenal Nomenclature
 
 See http://www.dozenal.org/drupal/sites_bck/default/files/DSA_kodegadulo_sdn.pdf
 
-*  Roots:
+##  Roots:
 0.  nil
 1. un
 2. bi
@@ -19,8 +19,8 @@ See http://www.dozenal.org/drupal/sites_bck/default/files/DSA_kodegadulo_sdn.pdf
 With these roots we can represent any whole number just by stringing them together.
 e.g.:
 
-*  123  -> unbitri
-*  XE6  -> declevhex
+1. 123  -> unbitri
+2. XE6  -> declevhex
 
 We can also use the -dit- syllable to represent a decimal point:
 
@@ -34,6 +34,10 @@ If "per" is at the beginning, we assume the numerator to be 1:
 
 1/3 -> pertri
 1/5 -> perpent
+
+For generic/unspecified/ambiguous numbers, we can also use the particle -what-
+
+e.g. triperwhat-  would be "3 per something", etc.
 
 * Multiplier prefixes:
 
