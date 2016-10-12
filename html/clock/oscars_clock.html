@@ -1,0 +1,237 @@
+<doctype html>
+<html>
+<head>
+    <title>Analog Clock using Canvas</title>
+</head>
+<body>
+    <canvas id="canvas" width="400" height="400"></canvas>
+</body>
+
+
+<script>
+window.onload = function () {
+    // parameters
+    var nilquaMultiplier = 1;
+    var unquaMultiplier = 120;
+    var biquaMultiplier = 120;
+    var triquaMultiplier = 120;
+    
+    var secHandLength = 120;  // make clock bigger or smaller by twiddling this
+    
+    // constants
+    var numbMillisecondsPerDay = 24 * 60 * 60 * 1000;
+    
+    // computed values
+    var numbTriquaTicksPerDay = nilquaMultiplier * unquaMultiplier * biquaMultiplier * triquaMultiplier;
+    var triquaTicksPerMillisecond = numbTriquaTicksPerDay / numbMillisecondsPerDay;
+    triquaTicksPerNilquaTick = triquaMultiplier * biquaMultiplier * unquaMultiplier
+    triquaTicksPerUnquaTick = triquaMultiplier * biquaMultiplier
+    triquaTicksPerBiquaTick = triquaMultiplier
+    
+    setInterval(showClock, 10);
+    
+    function showClock() {
+        // DEFINE CANVAS AND ITS CONTEXT.
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+	
+        var date = new Date;
+	// calculated values
+	// find out how many triquaTicks have happened
+	var currNumbMilliseconds = (((date.getHours() * 60  +
+				      date.getMinutes()) * 60  +
+				     date.getSeconds()) * 1000 +
+				    date.getMilliseconds());
+	var currNumbTriquaTicks = currNumbMilliseconds * triquaTicksPerMillisecond;
+	
+	// compute current time
+	leftOverTicks = currNumbTriquaTicks
+	var currNilquaTicks = leftOverTicks / triquaTicksPerNilquaTick;
+	leftOverTicks = leftOverTicks % triquaTicksPerNilquaTick;
+	
+	var currUnquaTicks = leftOverTicks / triquaTicksPerUnquaTick;
+	leftOverTicks = leftOverTicks % triquaTicksPerUnquaTick;
+	
+	var currBiquaTicks = leftOverTicks / triquaTicksPerBiquaTick;
+	leftOverTicks = leftOverTicks % triquaTicksPerBiquaTick;
+	
+	var currTriquaTicks = leftOverTicks
+        // CLEAR EVERYTHING ON THE CANVAS. \
+        ctx.clearRect(0, 0, canvas.width, canvas.height);        
+	
+        OUTER_DIAL1();
+        OUTER_DIAL2();
+        CENTER_DIAL();
+	
+        makeUnquaMarkers();
+        makeUnciaMarkers();
+	
+	SHOW_REAL_SECONDS();
+        showTriquaHand();
+        showBiquaHand();
+        showUnquaHand();
+        showNilquaHand();
+	
+	
+        function OUTER_DIAL1() {
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, secHandLength + 10, 0, Math.PI * 2);
+            ctx.strokeStyle = '#92949C';
+            ctx.stroke();
+        }
+	function OUTER_DIAL2() {
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, secHandLength + 7, 0, Math.PI * 2);
+            ctx.strokeStyle = '#929BAC';
+            ctx.stroke();
+        }
+	    
+        function CENTER_DIAL() {
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, 2, 0, Math.PI * 2);
+            ctx.lineWidth = 3;
+            ctx.fillStyle = '#353535';
+            ctx.strokeStyle = '#0C3D4A';
+            ctx.stroke();
+        }
+	    
+        function makeUnquaMarkers() {
+            for (var i = 0; i < unquaMultiplier; i++) {
+                angle = (i - 3) * (Math.PI * 2) / unquaMultiplier;       // THE ANGLE TO MARK.
+                ctx.lineWidth = 1;            // HAND WIDTH.
+                ctx.beginPath();
+		
+                var x1 = (canvas.width / 2) + Math.cos(angle) * (secHandLength);
+                var y1 = (canvas.height / 2) + Math.sin(angle) * (secHandLength);
+                var x2 = (canvas.width / 2) + Math.cos(angle) * (secHandLength - (secHandLength / 7));
+                var y2 = (canvas.height / 2) + Math.sin(angle) * (secHandLength - (secHandLength / 7));
+		
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+		
+                ctx.strokeStyle = '#466B76';
+                ctx.stroke();
+            }
+        }
+	
+	    
+        function makeUnciaMarkers() {
+	    var numbTicMarks = unquaMultiplier * 6;
+	    
+            for (var i = 0; i < numbTicMarks; i++) {
+                angle = (i - 3) * (Math.PI * 2) / numbTicMarks;       // THE ANGLE TO MARK.
+                ctx.lineWidth = 1;            // HAND WIDTH.
+                ctx.beginPath();
+		
+                var x1 = (canvas.width / 2) + Math.cos(angle) * (secHandLength);
+                var y1 = (canvas.height / 2) + Math.sin(angle) * (secHandLength);
+                var x2 = (canvas.width / 2) + Math.cos(angle) * (secHandLength - (secHandLength / 30));
+                var y2 = (canvas.height / 2) + Math.sin(angle) * (secHandLength - (secHandLength / 30));
+		
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.strokeStyle = '#C4D1D5';
+                ctx.stroke();
+            }
+        }
+	// mostly for debugging :-)
+	function SHOW_REAL_SECONDS() {
+	    return;
+            angle =
+		((Math.PI * 2) * (date.getSeconds() /  60)) -
+		((Math.PI * 2) / 4);  // this adjusts the 0 angle to the top of the clock
+                ctx.lineWidth = 0.5;              // HAND WIDTH.
+		
+                ctx.beginPath();
+                // START FROM CENTER OF THE CLOCK.
+                ctx.moveTo(canvas.width / 2, canvas.height / 2);   
+                // DRAW THE LENGTH.
+                ctx.lineTo((canvas.width / 2 + Math.cos(angle) * secHandLength),
+                    canvas.height / 2 + Math.sin(angle) * secHandLength);
+                // DRAW THE TAIL OF THE SECONDS HAND.
+                ctx.moveTo(canvas.width / 2, canvas.height / 2);    // START FROM CENTER.
+                // DRAW THE LENGTH.
+                ctx.lineTo((canvas.width / 2 - Math.cos(angle) * 20),
+                    canvas.height / 2 - Math.sin(angle) * 20);
+                ctx.strokeStyle = '#586A73';        // COLOR OF THE HAND.
+                ctx.stroke();
+            }
+	    
+	    
+	    
+        function showTriquaHand() {
+            angle =
+		((Math.PI * 2) * currTriquaTicks) -
+		((Math.PI * 2) / 4);  // this adjusts the 0 angle to the top of the clock
+                ctx.lineWidth = 0.5;              // HAND WIDTH.
+		
+                ctx.beginPath();
+                // START FROM CENTER OF THE CLOCK.
+                ctx.moveTo(canvas.width / 2, canvas.height / 2);   
+                // DRAW THE LENGTH.
+                ctx.lineTo((canvas.width / 2 + Math.cos(angle) * secHandLength),
+                    canvas.height / 2 + Math.sin(angle) * secHandLength);
+                // DRAW THE TAIL OF THE SECONDS HAND.
+                ctx.moveTo(canvas.width / 2, canvas.height / 2);    // START FROM CENTER.
+                // DRAW THE LENGTH.
+                ctx.lineTo((canvas.width / 2 - Math.cos(angle) * 20),
+                    canvas.height / 2 - Math.sin(angle) * 20);
+                ctx.strokeStyle = '#586A73';        // COLOR OF THE HAND.
+                ctx.stroke();
+            }
+	    
+	    
+        function showBiquaHand() {
+            angle =
+		((Math.PI * 2) * currBiquaTicks) -
+		((Math.PI * 2) / 4);  // this adjusts the 0 angle to the top of the clock
+                ctx.lineWidth = 0.7;              // HAND WIDTH.
+		
+                ctx.beginPath();
+                // START FROM CENTER OF THE CLOCK.
+                ctx.moveTo(canvas.width / 2, canvas.height / 2);   
+                // DRAW THE LENGTH.
+                ctx.lineTo((canvas.width / 2 + Math.cos(angle) * secHandLength),
+                    canvas.height / 2 + Math.sin(angle) * secHandLength);
+                // DRAW THE TAIL OF THE SECONDS HAND.
+                ctx.moveTo(canvas.width / 2, canvas.height / 2);    // START FROM CENTER.
+                // DRAW THE LENGTH.
+                ctx.lineTo((canvas.width / 2 - Math.cos(angle) * 20),
+                    canvas.height / 2 - Math.sin(angle) * 20);
+                ctx.strokeStyle = '#586A73';        // COLOR OF THE HAND.
+                ctx.stroke();
+            }
+	    
+	    
+        function showUnquaHand() {
+            angle = ((Math.PI * 2) * currUnquaTicks) - ((Math.PI * 2) / 4);
+            ctx.lineWidth = 1.7;              // HAND WIDTH.
+	    
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, canvas.height / 2);  // START FROM CENTER.
+            // DRAW THE LENGTH.
+            ctx.lineTo((canvas.width / 2 + Math.cos(angle) * secHandLength / 1.1),      
+                       canvas.height / 2 + Math.sin(angle) * secHandLength / 1.1);
+	    
+            ctx.strokeStyle = '#999';  // COLOR OF THE HAND.
+            ctx.stroke();
+        }
+	    
+	    
+        function showNilquaHand() {
+            angle = ((Math.PI * 2) * currNilquaTicks) - ((Math.PI * 2) / 4);
+	    ctx.lineWidth = 1.5;              // HAND WIDTH.
+	    
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, canvas.height / 2);     // START FROM CENTER.
+            // DRAW THE LENGTH.
+            ctx.lineTo((canvas.width / 2 + Math.cos(angle) * secHandLength / 1.5),      
+		       canvas.height / 2 + Math.sin(angle) * secHandLength / 1.5);
+	    
+            ctx.strokeStyle = '#000';   // COLOR OF THE HAND.
+            ctx.stroke();
+        }
+    }
+}
+</script>
+</html>
