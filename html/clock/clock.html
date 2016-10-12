@@ -117,17 +117,27 @@ window.onload = function () {
                 angle = (i - 3) * (Math.PI * 2) / unquaMultiplier;       // THE ANGLE TO MARK.
                 ctx.lineWidth = 1;            // HAND WIDTH.
                 ctx.beginPath();
-		
-                var x1 = (canvas.width / 2) + Math.cos(angle) * (secHandLength);
-                var y1 = (canvas.height / 2) + Math.sin(angle) * (secHandLength);
-                var x2 = (canvas.width / 2) + Math.cos(angle) * (secHandLength - (secHandLength / 7));
-                var y2 = (canvas.height / 2) + Math.sin(angle) * (secHandLength - (secHandLength / 7));
+		    
+		 ctx.save()
+	         ctx.rotate(angle)
+		 
+		var x1 = 0;
+                var y1 = (canvas.height / 2) +  secHandLength;
+                var x2 = 0;
+                var y2 = (canvas.height / 2) + (secHandLength - (secHandLength / 7));
+                
+		//var x1 = (canvas.width / 2) + Math.cos(angle) * (secHandLength);
+                //var y1 = (canvas.height / 2) + Math.sin(angle) * (secHandLength);
+                //var x2 = (canvas.width / 2) + Math.cos(angle) * (secHandLength - (secHandLength / 7));
+                //var y2 = (canvas.height / 2) + Math.sin(angle) * (secHandLength - (secHandLength / 7));
 		
                 ctx.moveTo(x1, y1);
                 ctx.lineTo(x2, y2);
 		
                 ctx.strokeStyle = '#466B76';
                 ctx.stroke();
+		    
+		ctx.restore();
             }
         }
 	
