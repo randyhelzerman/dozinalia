@@ -20,10 +20,10 @@
 
 window.onload = function () {
     // parameters
-    var dailyMultiplier = 1;
-    var unHocQuaDailyMultiplier = 24;
-    var biHocQuaDailyMultiplier = 24;
-    var triHocQuaDailyMultiplier = 24;
+    var dailyMultiplier = 2;
+    var unHocQuaDailyMultiplier = 12;
+    var biHocQuaDailyMultiplier = 12;
+    var triHocQuaDailyMultiplier = 12;
     
     var secHandLength = 120;  // make clock bigger or smaller by twiddling this
     
@@ -76,17 +76,20 @@ window.onload = function () {
         
         OUTER_DIAL1();
         OUTER_DIAL2();
-        CENTER_DIAL();
         
         makeUnHocQuaDailyMarkers();
         makeUnciaMarkers();
         
-        SHOW_REAL_SECONDS();
-        showHand(currTriHocQuaDailyTicks, 0.5, 1);
-        showHand(currBiHocQuaDailyTicks, 0.7, 1);
-        showHand(currUnHocQuaDailyTicks, 1.5, 1.1);
-        showHand(currDailyTicks, 1.7, 1.5);
-
+        //SHOW_REAL_SECONDS();
+	
+	showGMTHand();
+        showHand(currTriHocQuaDailyTicks, 0.5, 1, 0.5, 0);
+        showHand(currBiHocQuaDailyTicks, 0.7, 1, 0.5, 0);
+        showHand(currUnHocQuaDailyTicks, 1.5, 1.1, 1.5, 0);
+        showHand(currDailyTicks, 1.7, 1.5, 1.5, 0);
+	
+        CENTER_DIAL();
+	
 	// This would be an ISO seconds hand, if you ever
 	// want to compare the movement of your hands with
 	// a garden-variety seconds hand.
@@ -207,8 +210,11 @@ window.onload = function () {
         }
         
         
-        function showHand(currTicks, widthOfHand, scale) {
+        function showHand(currTicks, widthOfHand, scale, flair, tail) {
             ctx.save(); {
+                ctx.strokeStyle = '#8O8O8O';
+                ctx.fillStyle = 'grey';
+		
                 // set frame of reference
                 ctx.translate((canvas.width / 2), (canvas.height / 2));
                 // this adjusts the 0 angle to the top of the clock
@@ -219,15 +225,63 @@ window.onload = function () {
                 
                 ctx.beginPath(); {
                     // "head" of the hand
-                    ctx.moveTo(0,0);
-                    ctx.lineTo(0, secHandLength/scale);
+                    ctx.moveTo(flair,secHandLength/scale);
+                    ctx.lineTo(-flair, secHandLength/scale);
                     
                     // "tail" of the hand
+                    ctx.lineTo(-flair,0);
+                    ctx.lineTo(0,-tail);
+                    ctx.lineTo(flair,0);
+		    ctx.lineTo(0,secHandLength/scale);
+                } ctx.fill();
+            } ctx.restore();
+        }
+
+
+        function showGMTHand() {
+            ctx.save(); {
+		// get  GMT Time ratio
+		date = new Date();
+		t1 = 60*60*date.getUTCHours();
+		t2 = 60*date.getUTCMinutes();
+		t3 = date.getUTCSeconds();
+		t4 = date.getUTCMilliseconds()/1000;
+		GMTtime = t1 + t2 + t3 + t4
+		GMTTicks = GMTtime / (24*3600) / 2;
+		
+                // set frame of reference
+		ctx.translate((canvas.width / 2), (canvas.height / 2));
+                // this adjusts the 0 angle to the top of the clock
+                angle = (tau * GMTTicks) - Math.PI
+                ctx.rotate(angle)
+                
+                ctx.lineWidth = 0.25
+                
+                ctx.beginPath(); {
+                    // "head" of the hand
                     ctx.moveTo(0,0);
-                    ctx.lineTo(0,-20);
+                    ctx.lineTo(0, secHandLength/4);
+		    
+                    // "tail" of the hand
+                    ctx.moveTo(0,0);
+                    ctx.lineTo(0,0);
                     
-                    ctx.strokeStyle = '#586A73';        // COLOR OF THE HAND.
+                    ctx.strokeStyle = '#COCOCO';        // COLOR OF THE HAND.
                 } ctx.stroke();
+		
+		// arrow head of the hand
+                ctx.beginPath(); {
+                    // "head" of the hand
+                    ctx.moveTo(0,secHandLength/4);
+                    ctx.lineTo(4, secHandLength/4-4);
+                    ctx.lineTo(-4, secHandLength/4-4);
+		    
+                    ctx.fillStyle = '#COCOCO';        // COLOR OF THE HAND.
+		    ctx.fill();
+                } ctx.stroke();
+                    
+
+		
             } ctx.restore();
         }
     }
