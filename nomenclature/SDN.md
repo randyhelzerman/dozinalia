@@ -24,7 +24,7 @@ e.g.:
 
 We can also use the -dit- syllable to represent a decimal point:
 
-* 3.1415 -> trididunquadunpent
+* 3.1415 -> triditunquadunpent
 
 We can represent fractions by using the -per- syllable:
 
